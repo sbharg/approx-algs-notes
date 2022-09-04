@@ -1,1 +1,19 @@
-Insert sections/text here
+\begin{problem}[Vertex Cover]
+    Given an undirected graph $G = (V, E)$ and a cost function $c: V \rightarrow \Q^+$, find a minimum cost 
+    set of vertices $V^\prime \sse V$ such that every edge has at least one endpoint in $V^\prime$. 
+    \label{prob:vertex_cover}
+\end{problem}
+
+\begin{definition}[Submodularity]
+    A function $f$ is submodular if it satisfies
+    \begin{equation*}
+        \f{f}{S \cup \lrc{v}} - \f{f}{S} \geq \f{f}{T \cup \lrc{v}} - \f{f}{T}
+    \end{equation*}
+    for every pair of sets $S, T$ such that $S \sse T$ and element $v \notin T$.
+    \label{def:submod}
+\end{definition}
+
+\begin{theorem}
+    Under the IC model, $\sigma$ is a submodular function. 
+    \label{thm:}
+\end{theorem}
