@@ -101,19 +101,16 @@
 \RequirePackage{thmtools}
 
 % --Colors + Refs----------------
-\RequirePackage{color}
-\RequirePackage[dvipsnames]{xcolor}
-\definecolor{Red}{rgb}{1,0,0}
-\def\red{\color{Red}}
-\definecolor{Blue}{rgb}{0,0,1}
-\def\blue{\color{Blue}}
+%\RequirePackage{color}
+\RequirePackage[usenames, dvipsnames]{xcolor}
 \definecolor{linkcolor}{rgb}{0, 0.25, 0.75}
+\RequirePackage[framemethod=TikZ]{mdframed}
 
 \RequirePackage{hyperref}
 \hypersetup{
   colorlinks=true,
-  linkcolor=linkcolor,
-  citecolor=linkcolor,
+  linkcolor= linkcolor,
+  citecolor= linkcolor,
 }
 \RequirePackage[nameinlink,capitalize]{cleveref}
  
@@ -207,17 +204,47 @@
 \newcommand{\NOTE}[1]{\textcolor{OrangeRed}{{\bf NOTE:}} #1}
 \newcommand{\cc}{\textcolor{red}{\bf [citation(s)]}}
 \newcommand{\email}[1]{\texttt{#1}}
-\newcommand{\func}[2]{\ensuremath{#1 \! \lrp{#2}}}
+\newcommand{\f}[2]{\ensuremath{#1 \! \lrp{#2}}}
+\newcommand{\func}[2]{\f{#1}{#2}}
 
 % --Theorem Styling--------------
 \newcommand{\qedsym}{\hfill$\blacksquare$}
+\mdfsetup{skipabove=\topsep,skipbelow=\topsep}
 
 \declaretheoremstyle[
-  spacebelow=\topsep,
-  spaceabove=\topsep,
-  notefont=\normalfont\itshape, notebraces={(}{)},
-  bodyfont=\normalfont
+  headfont=\bfseries, 
+  bodyfont=\normalfont,
+  headpunct= .,
+  mdframed={
+			linewidth=2pt,
+			rightline=false, topline=false, bottomline=false,
+			linecolor=OliveGreen, backgroundcolor=OliveGreen!0,
+			nobreak=false
+		}
 ]{def}
+
+\declaretheoremstyle[
+	headfont=\bfseries, 
+  bodyfont=\itshape,
+  headpunct= ,
+  postheadspace=\newline,
+	mdframed={
+			linewidth=2pt,
+			rightline=false, topline=false, bottomline=false,
+			linecolor=MidnightBlue, backgroundcolor=MidnightBlue!0,
+			nobreak=false,
+		}
+]{problem}
+
+\declaretheoremstyle[
+  bodyfont=\itshape,
+	mdframed={
+			linewidth=2pt,
+			rightline=false, topline=false, bottomline=false,
+			linecolor=RedOrange, backgroundcolor=RedOrange!0,
+			nobreak=false,
+		}
+]{thms}
  
 \declaretheoremstyle[
   spacebelow=\topsep,
@@ -227,7 +254,9 @@
   qed=\qedsym
 ]{proof}
 
-\declaretheorem[style=plain]{theorem, lemma, corollary, claim, conjecture, proposition, observation, remark, problem}
+\declaretheorem[style=thms]{theorem, lemma, corollary}
+\declaretheorem[style=plain]{claim, conjecture, proposition, observation, remark}
+\declaretheorem[style=problem]{problem}
 \declaretheorem[style=def]{definition}
 
 \let\proof\relax
