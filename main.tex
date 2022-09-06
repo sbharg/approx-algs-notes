@@ -1,29 +1,29 @@
 \documentclass[11pt]{article}
-\usepackage[a4]{preamble}
+\usepackage[a4, biblatex]{preamble}
 
 % If using biblatex, specify bib file here
-%\addbibresource{refs.bib}
+\addbibresource{refs.bib}
 
 \title{Notes on Approximation Algorithms}
 \author{Bhargav Samineni}
 \affil{}
 \date{} 
-
+ 
 \begin{document}
     \maketitle  
 
     \begin{abstract}
         A collection of some notes on the design and analysis of approximation algorithms and approximation techniques. 
-        Based mainly off of \cite{williamson2011design, vazirani2001approximation}. 
+        Based mainly off of \cite{vazirani2001approximation, williamson2011design}. 
     \end{abstract}
 
-    \section{Introduction}
-    \input{sections/introduction.tex}
+    %\input{sections/set_cover.tex}
+    \input{sections/lp_duality.tex}
     
     \newpage
     % Delete prev .bbl file if switching between biblatex and bibtex
 
-    %\printbibliography     % For biblatex
-    \bibliography{refs}     % For bibtex/natbib
+    \printbibliography     % For biblatex
+    %\bibliography{refs}     % For bibtex/natbib
  
 \end{document}

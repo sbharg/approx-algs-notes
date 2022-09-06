@@ -1,0 +1,72 @@
+\section{LP-Duality}
+\label{sec:lp_duality}
+
+\newcommand{\primal}{\hyperref[def:primal_dual]{$(P)$}}
+\newcommand{\dual}{\hyperref[def:primal_dual]{$(D)$}}
+
+For a linear program in canonical form, the goal is to find a non-negative, rational vector $x \in \Q^n$ that minimizes
+a given linear objective function in $x$ subject to some linear constraints on $x$.
+The coefficients of the linear objective function can be represented by a vector $c \in \Q^n$, 
+the coefficients of the linear constraints can be represented by a matrix $A = (a_{ij}) \in \Q^{m \times n}$, 
+and the values of the linear constraints can be represented by a vector $b \in \Q^m$. 
+
+\begin{definition}[Primal and Dual]
+    Given a linear programming problem in canonical form denoted as $(P)$, we can induce a problem denoted 
+    by $(D)$ with the following form:\\
+    \label{def:primal_dual} 
+    \begin{minipage}{0.5\linewidth}
+        \begin{mini*}
+            {}{\sum_{j=1}^{n} c_j x_j}{}{(P)\quad}{}
+            \addConstraint{\sum_{j=1}^{n} a_{ij} x_j}{\geq b_i}{\quad i=1, \ldots, m}
+            \addConstraint{x_j}{\geq 0}{\quad j = 1, \ldots, n}
+        \end{mini*}
+        \;
+    \end{minipage}%
+    \begin{minipage}{0.5\linewidth}
+        \begin{maxi*}
+            {}{\sum_{i=1}^{m} b_i y_i}{}{(D)\quad}{}
+            \addConstraint{\sum_{j=1}^{m} a_{ij} y_i}{\leq c_j}{\quad j=1, \ldots, n}
+            \addConstraint{y_i}{ \geq 0}{\quad i = 1, \ldots, m}
+        \end{maxi*}
+        \;
+    \end{minipage}  
+    where $a_{ij}, b_i,$ and $c_i$ are given rational numbers and $y_i$ corresponds to the $i$th inequality of $(P)$.
+    \begin{definition}[Primal]
+        The problem \primal{} is referred to as the \emph{primal}. 
+        \label{def:primal}
+    \end{definition}
+    \begin{definition}[Dual]
+        The \emph{dual} of the primal is problem \dual{}. 
+        \label{def:dual}
+    \end{definition}
+\end{definition}
+
+Note that the dual of a dual program is the primal program. 
+Every feasible solution for the dual serves as a lower bound on the optimal objective function 
+value of the primal. The reverse also holds in that every feasible solution to the primal 
+serves as an upper bound on the optimal objective function value of the dual. 
+
+\begin{theorem}[Weak Duality]
+    If $\bm{x} = \lrp{x_1, \ldots, x_n} $ is a feasible solution to the LP \primal{} and $\bm{y} = \lrp{y_1, \ldots, y_m} $ a feasible solution to the LP \dual{}, 
+    then $\sum_{j=1}^{n} c_j x_j \geq \sum_{i=1}^{m} b_i y_i$. 
+    \label{thm:weak_duality}
+\end{theorem}
+\begin{proof}
+    \begin{align*}
+        \sum_{j=1}^{n} c_j x_j \geq \sum_{j=1}^{n} \lrp{\sum_{i=1}^{m} a_{ij} y_i} x_j
+        =  \sum_{i=1}^{m} \lrp{\sum_{j=1}^{n} a_{ij} x_j} y_i 
+        \geq \sum_{i=1}^{m} b_i y_i
+    \end{align*}
+\end{proof}
+
+As a consequence of \cref{thm:weak_duality}, if we find that there exist some 
+feasible solutions to \primal{} and \dual{} that have matching objection function values, 
+then these solutions must be optimal. 
+
+\begin{theorem}[Strong Duality/LP-Duality]
+    If the LPs \primal{} and \dual{} are both feasible, and $\bm{x^{\ast}} = \lrp{x_1^{\ast}, \ldots, x_n^{\ast}}$
+    and $\bm{y^{\ast}} = \lrp{y_1^{\ast}, \ldots, y_m^{\ast}}$ are optimal solutions to \primal{} and \dual{}, respectively, 
+    then $\sum_{j=1}^{n} c_j x_j = \sum_{i=1}^{m} b_i y_i$. 
+    \label{thm:strong_duality}
+\end{theorem}
+
