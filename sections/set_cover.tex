@@ -1,0 +1,33 @@
+\section{Set Cover}
+\label{sec:set_cover}
+
+\newcommand{\setcover}{\hyperref[def:linear_threshold]{\textsf{Set Cover}}}
+
+\begin{problem}[Set Cover]
+    Given a ground set $U = \lrc{e_1, \ldots, e_n}$, a collection $\mathcal{S} = \lrc{S_1, \ldots, S_m}$ of subsets of $U$,
+    and a cost function $c\colon \mathcal{S} \to \Q^+$, find a minimum cost subcollection of $\calS$ that covers all elements in $U$. 
+    \label{prob:set_cover}
+\end{problem}
+
+\subsection{Combinatorial Algorithms}
+\begin{definition}[Frequency]
+    The \emph{frequency} of an element $e$ is the number of elements of $\calS$ it appears in. Denote by $f$ the frequency of the most frequent element. 
+    \label{def:set_cover_freq}
+\end{definition}
+
+\subsubsection{Greedy}
+
+\begin{algorithm}[!h]
+    \caption{Greedy Set Cover Algorithm} \label{alg:set_cover_greedy}
+    \begin{algorithmic}[1]
+        \State $C \gets \emptyset$
+        \While{$C \neq U$}
+            \State Let $\alpha_i = \frac{c \lrp{S_i}}{\abs{S_i \sm C}}$ be the cost effectiveness of a set $S_i \in \calS$. 
+            \State Find the set that minimizes $\alpha_i$. Denote this set by $S_j$ and set $\func{p}{e} = \alpha_j$ for each $e \in S_j \sm C$
+            \State $C \gets C \cup S_j$, $\calS \gets \calS \sm S_j$
+        \EndWhile
+        \State \Return $C$
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Layering}
