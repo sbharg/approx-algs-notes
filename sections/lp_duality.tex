@@ -1,12 +1,14 @@
-\section{LP-Duality}
+\section{Introduction to LP-Duality}
 \label{sec:lp_duality}
 
 \newcommand{\primal}{\hyperref[def:primal_dual]{$(P)$}}
 \newcommand{\dual}{\hyperref[def:primal_dual]{$(D)$}}
 
-For a linear program in canonical form, the goal is to find a non-negative, rational vector $x \in \Q^n$ that minimizes
+\subsection{LP-Duality}
+For a minimization linear program in canonical form, the goal is to find a non-negative, rational vector $x$ that minimizes
 a given linear objective function in $x$ subject to some linear constraints on $x$.
-The coefficients of the linear objective function can be represented by a vector $c \in \Q^n$, 
+If there are $n$ decision variables and $m$ linear constraints, then $x \in \Q^n$, 
+the coefficients of the linear objective function can be represented by a vector $c \in \Q^n$, 
 the coefficients of the linear constraints can be represented by a matrix $A = (a_{ij}) \in \Q^{m \times n}$, 
 and the values of the linear constraints can be represented by a vector $b \in \Q^m$. 
 
@@ -25,7 +27,7 @@ and the values of the linear constraints can be represented by a vector $b \in \
     \begin{minipage}{0.5\linewidth}
         \begin{maxi*}
             {}{\sum_{i=1}^{m} b_i y_i}{}{(D)\quad}{}
-            \addConstraint{\sum_{j=1}^{m} a_{ij} y_i}{\leq c_j}{\quad j=1, \ldots, n}
+            \addConstraint{\sum_{i=1}^{m} a_{ij} y_i}{\leq c_j}{\quad j=1, \ldots, n}
             \addConstraint{y_i}{ \geq 0}{\quad i = 1, \ldots, m}
         \end{maxi*}
         \;
@@ -41,13 +43,12 @@ and the values of the linear constraints can be represented by a vector $b \in \
     \end{definition}
 \end{definition}
 
-Note that the dual of a dual program is the primal program. 
 Every feasible solution for the dual serves as a lower bound on the optimal objective function 
 value of the primal. The reverse also holds in that every feasible solution to the primal 
 serves as an upper bound on the optimal objective function value of the dual. 
 
 \begin{theorem}[Weak Duality]
-    If $\bm{x} = \lrp{x_1, \ldots, x_n} $ is a feasible solution to the LP \primal{} and $\bm{y} = \lrp{y_1, \ldots, y_m} $ a feasible solution to the LP \dual{}, 
+    If $x = \lrp{x_1, \ldots, x_n} $ is a feasible solution to the LP \primal{} and $y = \lrp{y_1, \ldots, y_m} $ a feasible solution to the LP \dual{}, 
     then $\sum_{j=1}^{n} c_j x_j \geq \sum_{i=1}^{m} b_i y_i$. 
     \label{thm:weak_duality}
 \end{theorem}
@@ -64,9 +65,146 @@ feasible solutions to \primal{} and \dual{} that have matching objection functio
 then these solutions must be optimal. 
 
 \begin{theorem}[Strong Duality/LP-Duality]
-    If the LPs \primal{} and \dual{} are both feasible, and $\bm{x^{\ast}} = \lrp{x_1^{\ast}, \ldots, x_n^{\ast}}$
-    and $\bm{y^{\ast}} = \lrp{y_1^{\ast}, \ldots, y_m^{\ast}}$ are optimal solutions to \primal{} and \dual{}, respectively, 
-    then $\sum_{j=1}^{n} c_j x_j = \sum_{i=1}^{m} b_i y_i$. 
+    If the LPs \primal{} and \dual{} are both feasible, and $x^{\ast} = \lrp{x_1^{\ast}, \ldots, x_n^{\ast}}$
+    and $y^{\ast} = \lrp{y_1^{\ast}, \ldots, y_m^{\ast}}$ are optimal solutions to \primal{} and \dual{}, respectively, 
+    then $\sum_{j=1}^{n} c_j x_j^{\ast} = \sum_{i=1}^{m} b_i y_i^{\ast}$. 
     \label{thm:strong_duality}
 \end{theorem}
 
+As a corollary of \cref{thm:strong_duality}, we find that optimal solutions to \primal{} and \dual{}
+must satisfy a set if conditions. 
+
+\begin{corollary}[Complementary Slack Conditions]
+    Let $x$ and $y$ be feasible solutions to \primal{} and \dual{}, respectively. Then 
+    $x$ and $y$ are both optimal iff the following are satisfied:
+    \begin{enumerate}
+        \item For each $1 \leq j \leq n$, either $x_j = 0$ or $\sum_{i=1}^{m} a_{ij}y_i = c_j$
+        \item For each $1 \leq i \leq m$, either $y_i = 0$ or $\sum_{j=1}^{n} a_{ij} x_j = b_i$. 
+    \end{enumerate}
+\end{corollary}
+
+\subsection{Algorithm Design Techniques}
+
+\begin{definition}[Extreme Point Solution]
+    Consider the polyhedron defining the set of feasible solutions to an LP. A feasible solution is called 
+    an \emph{extreme point solution} if it is a vertex of the polyhedron. 
+    \label{def:extreme_point_sol}
+\end{definition}
+
+\begin{theorem}
+    For any objective function, there is an extreme point solution that is optimal. 
+    \label{thm:opt_extreme_point}
+\end{theorem}
+
+Combinatorial optimization problems can often be stated as integer programs (IP), which can be relaxed to an LP. 
+For the case of $\NPH$ problems, however, the polyhedron that defines the set of feasible solutions to the LP-relaxation 
+may not have integer vertices. With the LP-relaxation, the goal is to find near optimal integral solutions. 
+
+One method to get an approximation algorithm is through \emph{LP-rounding}. Rounding involves solving the 
+LP-relaxation and the converting the fractional solution to an integral solution while ensuring the in the process the 
+cost does not increase dramatically. The approximation ratio is given by comparing the cost of the integral and fractional solutions. 
+
+Another method is the \emph{primal-dual schema}. Consider an LP-relaxation as the primal program. Under the scheme, 
+an integral solution to the primal and a feasible solution to the dual are constructed iteratively.
+Any feasible solution to the dual also provides a lower bound on OPT. The approximation ratio is given by 
+comparing the two solutions.  
+
+\subsubsection{Integrality Gap}
+
+\begin{definition}[Integrality Gap]
+    Given an LP-relaxation for a minimization problem, let $\OPT_{f}(I)$ be the cost 
+    of an optimal fractional solution to an instance $I$ of the problem. Similarly, let 
+    $\OPT(I)$ denote the cost of an optimal solution to the original IP for an instance $I$ of the problem. 
+    The \emph{integrality gap} of the relaxation is 
+    \[
+        \sup_{I} \frac{\OPT(I)}{\OPT_f (I)}. 
+    \]
+    In the case of a maximization problem, the integrality gap is given by the infimum of the ratio. 
+    \label{def:integrality_gap}
+\end{definition}
+
+When the integrality gap of an LP-relaxation is exactly $1$, such a relaxation is called an \emph{exact relaxation}.
+If the cost of a solution found by an algorithm is compared to the cost of an optimal 
+fractional solution (or feasible dual solution), the best approximation factor one can hope to achieve 
+is the integrality gap of the relaxation.   
+
+\subsection{Set Cover}
+\newcommand{\setcover}{\hyperref[prob:set_cover]{\textsf{Set Cover}}}
+
+\begin{problem}[Set Cover]
+    Given a ground set $U = \lrc{e_1, \ldots, e_n}$, a collection $\mathcal{S} = \lrc{S_1, \ldots, S_m}$ of subsets of $U$,
+    and a cost function $c\colon \mathcal{S} \to \Q^+$, find a minimum cost subcollection of $\calS$ that covers all elements in $U$. 
+    \label{prob:set_cover}
+\end{problem}
+
+To formulate \setcover{} as an IP, denote the binary decision variables by $x_S$ for each $S \in \calS$. 
+If $S$ is in the cover, then $x_S = 1$. 
+\begin{mini}
+    {}{\sum_{S \in \calS} c(S) x_S}{}{\label{lp:set_cover_ip}}{}
+    \addConstraint{\sum_{S\colon e \in S} x_S}{\geq 1}{\quad e \in U}
+    \addConstraint{x_S}{\in \lrc{0, 1}}{\quad S \in \calS}
+\end{mini}
+The LP-relaxation to this IP is given by letting $x_S \geq 0$. A solution to the LP-relaxation 
+can be viewed as a fractional set cover. 
+\begin{mini}
+    {}{\sum_{S \in \calS} c(S) x_S}{}{\label{lp:set_cover_lprelax}}{}
+    \addConstraint{\sum_{S\colon e \in S} x_S}{\geq 1}{\quad e \in U}
+    \addConstraint{x_S}{\geq 0}{\quad S \in \calS}
+\end{mini}
+Introducing a variable $y_e$ for each $e \in U$, we get the dual program. 
+\begin{maxi}
+    {}{\sum_{e \in U} y_e}{}{\label{lp:set_cover_lpdual}}{}
+    \addConstraint{\sum_{e\colon e \in S} y_e}{\leq \f[c]{S}}{\quad S \in \calS}
+    \addConstraint{y_e}{\geq 0}{\quad e \in U}
+\end{maxi}
+
+\begin{algorithm}[!h]
+    \caption{Greedy Set Cover Algorithm} \label{alg:set_cover_greedy}
+    \begin{algorithmic}[1]
+        \State $C \gets \emptyset$
+        \While{$C \neq U$}
+            \State Let $\alpha_i = \frac{c \lrp{S_i}}{\abs{S_i \sm C}}$ be the cost effectiveness of a set $S_i \in \calS$. 
+            \State Find the set that minimizes $\alpha_i$. Denote this set by $S_j$ and set $\func{p}{e} = \alpha_j$ for each $e \in S_j \sm C$
+            \State $C \gets C \cup S_j$, $\calS \gets \calS \sm S_j$
+        \EndWhile
+        \State \Return $C$
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Dual-Fitting Analysis}
+
+\subsection{Exercises}
+\begin{exercise}
+    The dual of the dual is the primal. 
+\end{exercise}
+\begin{solution}
+    The dual \dual{} is equivalent to the minimization problem 
+    \begin{mini*}
+        {}{\sum_{i=1}^{m} -b_i y_i}{}{}{}
+        \addConstraint{\sum_{i=1}^{m} -a_{ij} y_i}{\geq -c_j}{\quad j=1, \ldots, n}
+        \addConstraint{y_i}{ \geq 0}{\quad i = 1, \ldots, m}. 
+    \end{mini*}
+    Taking the dual of this LP gives \\
+    \begin{minipage}{0.49\linewidth}
+        \begin{maxi*}
+            {}{\sum_{j=1}^{n} -c_j x_j}{}{}{}
+            \addConstraint{\sum_{j=1}^{n} -a_{ij} x_j}{\leq -b_i}{\quad i=1, \ldots, m}
+            \addConstraint{x_j}{\geq 0}{\quad j = 1, \ldots, n}
+        \end{maxi*}
+        \;
+    \end{minipage}%
+    \begin{minipage}{0.02\linewidth}
+        \[
+            \Longleftrightarrow
+        \]
+    \end{minipage}  
+    \begin{minipage}{0.49\linewidth}
+        \begin{mini*}
+            {}{\sum_{j=1}^{n} c_j x_j}{}{}{}
+            \addConstraint{\sum_{j=1}^{n} a_{ij} x_j}{\geq b_i}{\quad i=1, \ldots, m}
+            \addConstraint{x_j}{\geq 0}{\quad j = 1, \ldots, n}
+        \end{mini*}
+        \;
+    \end{minipage}  
+    which is the primal \primal{}. 
+\end{solution}
