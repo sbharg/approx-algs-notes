@@ -1,7 +1,7 @@
 \section{Set Cover}
 \label{sec:set_cover}
 
-\newcommand{\setcover}{\hyperref[def:linear_threshold]{\textsf{Set Cover}}}
+\newcommand{\setcover}{\hyperref[prob:set_cover]{\textsf{Set Cover}}}
 
 \begin{problem}[Set Cover]
     Given a ground set $U = \lrc{e_1, \ldots, e_n}$, a collection $\mathcal{S} = \lrc{S_1, \ldots, S_m}$ of subsets of $U$,
@@ -9,25 +9,87 @@
     \label{prob:set_cover}
 \end{problem}
 
-\subsection{Combinatorial Algorithms}
-\begin{definition}[Frequency]
-    The \emph{frequency} of an element $e$ is the number of elements of $\calS$ it appears in. Denote by $f$ the frequency of the most frequent element. 
-    \label{def:set_cover_freq}
-\end{definition}
+To formulate \setcover{} as an IP, denote the binary decision variables by $x_j$ for each $S_j \in \calS$. 
+If $S_j$ is in the cover, then $x_j = 1$. 
+\begin{mini}
+    {}{\sum_{j=1}^m c(S_j) x_j}{}{\label{lp:set_cover_lprelax}}{}
+    \addConstraint{\sum_{j\colon e_i \in S_j} x_j}{\geq 1}{\quad i = 1, \ldots, n}
+    \addConstraint{x_j}{\in \lrc{0, 1}}{\quad j = 1, \ldots, m}
+\end{mini}
+The LP-relaxation to this IP is given by letting $x_j \geq 0$. A solution to the LP-relaxation 
+can be viewed as a fractional set cover. 
+\begin{mini}
+    {}{\sum_{j=1}^m c(S_j) x_j}{}{\label{lp:set_cover_lprelax}}{}
+    \addConstraint{\sum_{j\colon e_i \in S_j} x_j}{\geq 1}{\quad i = 1, \ldots, n}
+    \addConstraint{x_j}{\geq 0}{\quad j = 1, \ldots, m}
+\end{mini}
+Introducing a variable $y_i$ for each $e_i \in U$, we get the dual program. 
+\begin{maxi}
+    {}{\sum_{i = 1}^n y_i}{}{\label{lp:set_cover_lpdual}}{}
+    \addConstraint{\sum_{i\colon e_i \in S_j} y_i}{\leq \f[c]{S_j}}{\quad j = 1, \ldots, m}
+    \addConstraint{y_i}{\geq 0}{\quad i = 1, \ldots, n}
+\end{maxi}
 
-\subsubsection{Greedy}
+\subsection{Dual-Fitting Analysis}
 
 \begin{algorithm}[!h]
     \caption{Greedy Set Cover Algorithm} \label{alg:set_cover_greedy}
     \begin{algorithmic}[1]
-        \State $C \gets \emptyset$
+        \State $C, I \gets \emptyset$
         \While{$C \neq U$}
-            \State Let $\alpha_i = \frac{c \lrp{S_i}}{\abs{S_i \sm C}}$ be the cost effectiveness of a set $S_i \in \calS$. 
-            \State Find the set that minimizes $\alpha_i$. Denote this set by $S_j$ and set $\func{p}{e} = \alpha_j$ for each $e \in S_j \sm C$
-            \State $C \gets C \cup S_j$, $\calS \gets \calS \sm S_j$
+            %\State Let $\alpha_i = \frac{c \lrp{S_i}}{\abs{S_i \sm C}}$ be the cost effectiveness of a set $S_i \in \calS$. 
+            %\State Find the set that minimizes $\alpha_i$. Denote this set by $S_j$ and set $\func{p}{e} = \alpha_j$ for each $e \in S_j \sm C$
+            \State $i = \argmin_{j\colon S_j \in \calS} \frac{c(S_j)}{\abs{S_j \sm C}}$
+            \State $\f[p]{e_i} = \frac{c(S_i)}{\abs{S_i \sm C}} \quad \quad \forall e_i \in S_i \sm C$
+            \State $C \gets C \cup S_i$, $I \gets I \cup i$, $\calS \gets \calS \sm S_i$
         \EndWhile
         \State \Return $C$
     \end{algorithmic}
 \end{algorithm}
 
-\subsubsection{Layering}
+\cref{alg:set_cover_greedy} defines the dual program's value for each variable as $y_i = \f[p]{e_i}$. 
+However, the solution $y$ constructed by this approach is infeasible as it may not satisfy the first constraint. 
+To see this, note that if a set $S_j$ is chosen by the algorithm, it distributes its cost across all its uncovered elements. 
+If $S_j \cap C \neq \emptyset$, then this means that it contains some covered elements that already have some other set's cost distributed to them, 
+which would cause $\sum_{i\colon e_i\in S_j} y_i \geq \f[c]{S_j}$. Instead, we may be able to show that some scaled solution $y^\prime = \frac{y}{\kappa}$
+where $\kappa > 1$ is feasible for the dual. 
+
+\begin{lemma}
+    The vector $y^\prime = \frac{y}{H_g}$ is a feasible solution for the dual program \cref{lp:set_cover_lpdual}, where $g = \max_i \abs{S_i}$ and 
+    $H_g$ is the $g$th harmonic number. 
+    \label{lem:set_cover_scaled}
+\end{lemma}
+\begin{proof}
+    Assume the algorithm runs for $\ell$ iterations. Let $a_{j,k}$ be the number of elements in $S_j$ that are still uncovered
+    at the start of the $k$th iteration (hence $a_{1, j} = \abs{S_j}), a_{\ell+1, j} = 0$). Let $A_{j,k}$ denote the set of uncovered
+    elements in $S_j$ that are covered at the end of the $k$th iteration. If $S_i$ is chosen in the $k$th iteration, for each covered element
+    $e_i \in A_{i,k},$
+    \[
+        y_i^\prime = \frac{\f[c]{S_i}}{H_g a_{i,k}} \leq \frac{\f[c]{S_j}}{H_g a_{j,k}} \quad \forall S_j \in \calS
+    \]
+    since $S_i$ minimizes the ratio $\frac{S_i}{a_{i,k}}$. Then for any set $S_j$, 
+    \begin{align*}
+        \sum_{i\colon e_i\in S_j} y_i^\prime = \sum_{k=1}^{\ell} \sum_{i\colon e_i \in A_{j,k}} y_i^\prime 
+        &\leq \sum_{k=1}^{\ell} \lrp{a_{j,k} - a_{j,k+1}} \frac{\f[c]{S_j}}{H_g a_{j,k}}\\
+        &= \frac{\f[c]{S_j}}{H_g} \sum_{k=1}^{\ell} \frac{a_{j,k} - a_{j, k+1}}{a_{j, k}}\\
+        &= \frac{\f[c]{S_j}}{H_g} \sum_{k=1}^{\ell} \sum_{l=a_{j,k+1}+1}^{a_{j,k}} \frac{1}{a_{j,k}}\\
+        &\leq \frac{\f[c]{S_j}}{H_g} \sum_{k=1}^{\ell} \lrp{\frac{1}{a_{j,k}} + \frac{1}{a_{j,k}-1} + \ldots + \frac{1}{a_{j,k+1}+1}} \\
+        &\leq  \frac{\f[c]{S_j}}{H_g} \sum_{l=1}^{\abs{S_j}} \frac{1}{l} =  \frac{\f[c]{S_j}}{H_g} H_{\abs{S_j}} \leq \f[c]{S_j}
+    \end{align*}
+    which satisfies the first constraint of \cref{lp:set_cover_lpdual}. 
+\end{proof}
+
+\begin{theorem}
+    \cref{alg:set_cover_greedy} gives a $H_g$ approximation to \setcover{}. 
+    \label{thm:approx_set_cover_dual_fitting}
+\end{theorem}
+\begin{proof}
+    Since the greedy algorithm distributes the cost of the sets it chooses across all the elements, 
+    $\sum_{j \in I} \f[c]{S_j} = \sum_{i=1}^{n} y_i$. By \cref{lem:set_cover_scaled}, we know that $y^\prime$ is a feasible solution to the dual, 
+    so using \cref{thm:weak_duality} we get that 
+    \begin{equation*}   
+        \sum_{j \in I} \f[c]{S_j} = \sum_{i=1}^{n} y_i = H_g \sum_{i=1}^{n} y_i^\prime \leq H_g \OPT_f \leq H_g \OPT. 
+    \end{equation*}
+\end{proof}
+
+

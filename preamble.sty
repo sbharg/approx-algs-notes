@@ -170,6 +170,14 @@
 \newcommand{\bigomega}[1]{\ensuremath{\Omega\!\lrp{#1}}}
 \newcommand{\polyreduce}{\ensuremath{\leq_p}}
 
+% --Custom-----------------------
+\newcommand{\f}[2][f]{\ensuremath{#1 \! \lrp{#2}}}
+\newcommand{\func}[2]{\f[#1]{#2}}
+
+\newcommand{\OPT}{\ensuremath{\mathrm{OPT}}}
+\newcommand{\argmin}{\mathop{\mathrm{arg min}}\limits}
+\newcommand{\argmax}{\mathop{\mathrm{arg max}}\limits}
+
 % --More sets--------------------
 \newcommand{\nonneg}[1]{{\left[ {#1} \right]^+}}
 \def\sse{\subseteq}
@@ -208,9 +216,6 @@
 \newcommand{\NOTE}[1]{\textcolor{OrangeRed}{{\bf NOTE:}} #1}
 \newcommand{\cc}{\textcolor{red}{\bf [citation(s)]}}
 \newcommand{\email}[1]{\texttt{#1}}
-\newcommand{\f}[2][f]{\ensuremath{#1 \! \lrp{#2}}}
-\newcommand{\func}[2]{\f[#1]{#2}}
-\newcommand{\OPT}{\ensuremath{\mathrm{OPT}}}
 
 % --Theorem Styling--------------
 \newcommand{\qedsym}{\hfill$\blacksquare$}
@@ -260,16 +265,25 @@
   bodyfont=\itshape,
   headpunct= ,
   postheadspace=\newline,
+  postfoothook={\mbox{}\vskip-1.75ex{\hrule height 1pt}\vskip1ex\noindent}
   %postheadhook={\mbox{}\vskip-1.75ex{\color{ExerciseColor}\hrule height 1pt}\vskip1ex\noindent},
-	mdframed={
-			linewidth=2pt,
-			rightline=false, topline=false, bottomline=false,
-			linecolor=ExerciseColor, backgroundcolor=ExerciseColor!0,
-			nobreak=false,
-      skipbelow=0
-		}
+	%mdframed={
+	%		linewidth=2pt,
+	%		rightline=false, topline=false, bottomline=false,
+	%		linecolor=ExerciseColor, backgroundcolor=ExerciseColor!0,
+	%		nobreak=false,
+  %    skipbelow=0
+	%	}
 ]{exercise}
 
+\declaretheoremstyle[
+  headfont=\itshape,
+  bodyfont=\normalfont,
+  notefont=\itshape, notebraces={}{},
+  qed=\qedsym,
+  postheadspace=\newline,
+  preheadhook={\vspace{-\topsep}},
+]{solution}
 
 \declaretheoremstyle[
   bodyfont=\itshape,
@@ -312,12 +326,12 @@
 \declaretheorem[style=claims]{claim, conjecture, proposition, observation, remark}
 \declaretheorem[style=problem]{problem}
 \declaretheorem[style=def]{definition}
-\declaretheorem[style=exercise, numberwithin=section]{exercise}
+\declaretheorem[style=exercise, numberwithin=subsection]{exercise}
 
 \let\proof\relax
 \declaretheorem[numbered=no, style=proof]{proof}
 \declaretheorem[numbered=no, style=proof, name=Proof Sketch]{proofsketch}
-\declaretheorem[numbered=no, style=proof, name=Solution]{solution}
+\declaretheorem[numbered=no, style=solution, name=Solution]{solution}
 
 % --Cleverref--------------------
 \crefname{theorem}{Theorem}{Theorems}

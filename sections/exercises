@@ -1,0 +1,36 @@
+\section{Exercises}
+\subsection{LP-Duality}
+\begin{exercise}
+    The dual of the dual is the primal. 
+\end{exercise}
+\begin{solution}
+    The dual \dual{} is equivalent to the minimization problem 
+    \begin{mini*}
+        {}{\sum_{i=1}^{m} -b_i y_i}{}{}{}
+        \addConstraint{\sum_{i=1}^{m} -a_{ij} y_i}{\geq -c_j}{\quad j=1, \ldots, n}
+        \addConstraint{y_i}{ \geq 0}{\quad i = 1, \ldots, m}. 
+    \end{mini*}
+    Taking the dual of this LP gives \\
+    \begin{minipage}{0.49\linewidth}
+        \begin{maxi*}
+            {}{\sum_{j=1}^{n} -c_j x_j}{}{}{}
+            \addConstraint{\sum_{j=1}^{n} -a_{ij} x_j}{\leq -b_i}{\quad i=1, \ldots, m}
+            \addConstraint{x_j}{\geq 0}{\quad j = 1, \ldots, n}
+        \end{maxi*}
+        \;
+    \end{minipage}%
+    \begin{minipage}{0.02\linewidth}
+        \[
+            \Longleftrightarrow
+        \]
+    \end{minipage}  
+    \begin{minipage}{0.49\linewidth}
+        \begin{mini*}
+            {}{\sum_{j=1}^{n} c_j x_j}{}{}{}
+            \addConstraint{\sum_{j=1}^{n} a_{ij} x_j}{\geq b_i}{\quad i=1, \ldots, m}
+            \addConstraint{x_j}{\geq 0}{\quad j = 1, \ldots, n}
+        \end{mini*}
+        \;
+    \end{minipage}  
+    which is the primal \primal{}. 
+\end{solution}
