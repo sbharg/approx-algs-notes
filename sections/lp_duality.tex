@@ -47,7 +47,7 @@ value of the primal. The reverse also holds in that every feasible solution to t
 serves as an upper bound on the optimal objective function value of the dual. 
 
 \begin{theorem}[Weak Duality]
-    If $x = \lrp{x_1, \ldots, x_n} $ is a feasible solution to the LP \primal{} and $y = \lrp{y_1, \ldots, y_m} $ a feasible solution to the LP \dual{}, 
+    If $x = \lrp{x_1, \ldots, x_n} $ is a feasible solution to \primal{} and $y = \lrp{y_1, \ldots, y_m} $ a feasible solution to \dual{}, 
     then $\sum_{j=1}^{n} c_j x_j \geq \sum_{i=1}^{m} b_i y_i$. 
     \label{thm:weak_duality}
 \end{theorem}
@@ -64,7 +64,7 @@ feasible solutions to \primal{} and \dual{} that have matching objection functio
 then these solutions must be optimal. 
 
 \begin{theorem}[Strong Duality/LP-Duality]
-    If the LPs \primal{} and \dual{} are both feasible, and $x^{\ast} = \lrp{x_1^{\ast}, \ldots, x_n^{\ast}}$
+    If \primal{} and \dual{} are both feasible, and $x^{\ast} = \lrp{x_1^{\ast}, \ldots, x_n^{\ast}}$
     and $y^{\ast} = \lrp{y_1^{\ast}, \ldots, y_m^{\ast}}$ are optimal solutions to \primal{} and \dual{}, respectively, 
     then $\sum_{j=1}^{n} c_j x_j^{\ast} = \sum_{i=1}^{m} b_i y_i^{\ast}$. 
     \label{thm:strong_duality}
