@@ -12,7 +12,7 @@
 To formulate \setcover{} as an IP, denote the binary decision variables by $x_j$ for each $S_j \in \calS$. 
 If $S_j$ is in the cover, then $x_j = 1$. 
 \begin{mini}
-    {}{\sum_{j=1}^m c(S_j) x_j}{}{\label{lp:set_cover_lprelax}}{}
+    {}{\sum_{j=1}^m c(S_j) x_j}{}{\label{lp:set_cover_ip}}{}
     \addConstraint{\sum_{j\colon e_i \in S_j} x_j}{\geq 1}{\quad i = 1, \ldots, n}
     \addConstraint{x_j}{\in \lrc{0, 1}}{\quad j = 1, \ldots, m}
 \end{mini}

@@ -16,7 +16,9 @@
 \end{definition}
 
 Note that a matching $M$ covers exactly $2\abs{M}$ nodes, leaving $\abs{V} - 2\abs{M}$ nodes exposed. 
-A matching is \emph{perfect} if it covers all the nodes. A basic decision problem is to decide if a graph has a perfect matching. 
+A matching is \emph{maximal} if adding any edge $e \in E \sm M$ to it causes it to no longer be a matching. 
+A matching is \emph{perfect} if it covers all the nodes. 
+A basic decision problem is to decide if a graph has a perfect matching. 
 A more general problem is to find a maximum matching. 
 
 \begin{problem}[Maximum (Cardinality) Matching]
@@ -67,7 +69,99 @@ Augmenting paths can be used to identify a \maxmatch{} in the following way.
 Let $M$ be a current matching and $X$ the set of $M$-exposed nodes. 
 
 \begin{definition}[Alternating Tree]
-    An $M$-alternating tree is a tree $T$ with root node $r \in X$ such that along every path to a leaf node $v$, 
+    An $M$-alternating tree is a tree $T$ with root node $r \in X$ such that along every path to a node $v$, 
     the path is $M$-alternating with $e_i \in M$ iff $i = 2k$ for some $k \in \Z^+$. 
     \label{def:alternating_tree}
 \end{definition}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        [
+            level distance=8mm,
+            every node/.style={draw, fill, circle, minimum size=5pt, inner sep=0pt, line width=0.4pt},
+            rootnode/.style={label=left:$r$},
+            level 1/.style={nodes={fill=none}, edge from parent/.append style={line width=0.4pt}},
+            level 2/.style={nodes={fill}, edge from parent/.append style={line width=1.2pt}},
+            level 3/.style={nodes={fill=none}, edge from parent/.append style={line width=0.4pt}},
+            level 4/.style={nodes={fill}, edge from parent/.append style={line width=1.2pt}},
+            level 5/.style={nodes={fill=none}, edge from parent/.append style={line width=0.4pt}},
+            level 6/.style={nodes={fill}, edge from parent/.append style={line width=1.2pt}},
+            edge from parent/.style={draw}
+        ]
+
+        \node[rootnode] (root) at (0,0) {} [grow = east]
+            child {node {} 
+                child {node {}
+                    child {node {}
+                        child {node {} 
+                            child {node {}
+                                child {node {} 
+                                }
+                            }
+                        }
+                    }
+                    child {node {}
+                        child {node {} 
+                            child {node {}
+                                child {node {} 
+                                }
+                            }
+                        }
+                    }
+                }
+            } 
+            child {node {} 
+                child {node {}
+                    child {node {} 
+                        child {node {}
+                            child {node {} 
+                                child {node {}}
+                            }
+                        }
+                    }
+                }
+            }
+            child {node {} 
+                child {node {}
+                    child {node {} 
+                        child {node {}
+                            child {node {} 
+                                child {node {}} 
+                            }
+                            child {node {} 
+                                child {node {}} 
+                            }
+                        }    
+                    }
+                }
+            };
+    \end{tikzpicture}
+    \caption{An example of an alternating tree. Nodes in $A$ are white while nodes in $B$ are black.}
+    \label{fig:alternating_tree}
+\end{figure}
+
+We can divide an alternating tree $T = (V_T, E_T)$ into two node sets $A$ and $B$ such that $A$ is the set of nodes 
+at the other end of an odd-length $M$-alternating path starting at $r$ and $B$ is the set of nodes at the other end 
+of an even-length $M$-alternating path starting at $r$. Such sets can be built by the following relation: 
+starting with $A = \emptyset$ and $B = \lrc{r}$, if $\lrp{u, v} \in E$ such that $u \in B$ and $v \notin A \cup B$ and there 
+exists an edge $\lrp{v, w} \in M$, then $A \gets A \cup \lrc{v}$ and $B \gets B \cup \lrc{w}$. Note that if there exists some 
+edge $\lrp{i, j}$ where $i \in B$ and $j \notin T$ such that $j$ is $M$-exposed, then the path $P = \lrp{r, v_1}, \ldots, \lrp{i, j}$
+is $M$-augmenting. 
+
+\begin{definition}
+    An $M$-alternating tree is \emph{maximal} if for all $b \in B$, $\f[N]{b} \sse V_T$ (i.e.\! no additional nodes can be added to the tree).
+    It is \emph{frustrated} if for all $b \in B$, $\f[N]{b} \sse A$.
+    \label{def:maximal_alternating_tree}
+\end{definition} 
+
+\subsection{Maximum Matchings in the Bipartite Case}
+
+\begin{algorithm}[!h]
+    \caption{Maximum Matching in Bipartite Graphs Algorithm} \label{alg:max_match_bipartite}
+    \begin{algorithmic}[1]
+        \Algin A bipartite graph $G = \lrp{L, R, E}$
+        \Algout A matching $M$ 
+        \State $X \gets V$ \Comment{The set of $M$-exposed nodes}
+    \end{algorithmic}
+\end{algorithm}
