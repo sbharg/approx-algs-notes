@@ -195,7 +195,7 @@ Alternating trees are useful in deciding if a graph has a perfect matching in th
 \begin{algorithm}[!h]
     \caption{Maximum Cardinality Matching in Bipartite Graphs} \label{alg:max_card_match_bipartite}
     \begin{algorithmic}[1]
-        \Algin A bipartite graph $G = \lrp{V = \lrp{L, R} , E}$
+        \Algin A bipartite graph $G = \lrp{V, E}$
         \Algout A matching $M$ 
         \State $X \gets V, M \gets \emptyset, \calT \gets \emptyset$ \Comment{$X$ is the set of $M$-exposed nodes}
         \While{$X \neq \lrc{\f[\mathrm{root}]{T_i} \colon T_i \in \calT}$} \label{line:max_card_bi_while}
@@ -207,7 +207,7 @@ Alternating trees are useful in deciding if a graph has a perfect matching in th
         \Statex
         \Function{MaximalTree}{$G = \lrp{V, E}$}
             \State Choose $r \in X \cap V$ \Comment{Choose $M$-exposed vertex in current graph}
-            \State $T \gets \lrp{A, B}$ where $A = \emptyset$, $B = \lrc{r}$  
+            \State $T \gets \lrp{\lrp{A, B}, E_T}$ where $A = \emptyset$, $B = \lrc{r}, E_T = \emptyset$  
             \While{$\exists e = \lrp{u, v} \in E$ where $u \in B$, $v \notin T$}
                 \If{$v \in X$} \Comment{Forms an $M$-augmenting path}
                     \State Let $P$ be the path from $r$ to $v$
@@ -217,8 +217,8 @@ Alternating trees are useful in deciding if a graph has a perfect matching in th
                         \State \Return $\emptyset$ %$\lrp{\emptyset, \emptyset, M}$ 
                         \Comment{$M$ is a perfect matching}
                     \Else 
-                        \State Choose $r \in X$ \Comment{Start a new $M$-alternating tree}
-                        \State $T \gets \lrp{\emptyset, \lrc{r}}$ 
+                        \State Choose $r \in X \cap V$ \Comment{Start a new $M$-alternating tree}
+                        \State $T \gets \lrp{\lrp{\emptyset, \lrc{r}}, \emptyset}$ 
                     \EndIf
                 \Else
                     \State $T \gets \Call{ExtendTree}{T, e}$
@@ -232,10 +232,11 @@ Alternating trees are useful in deciding if a graph has a perfect matching in th
             \State \Return $ M \symdiff P$
         \EndProcedure
         \Statex
-        \Procedure{ExtendTree}{$T = \lrp{A, B} , e = \lrp{u, v}$}
-            \If{$\exists \lrp{v, w} \in M$}
+        \Procedure{ExtendTree}{$T = \lrp{\lrp{A, B}, E_T} , e = \lrp{u, v}$}
+            \If{$\exists e^\prime = \lrp{v, w} \in M$}
                 \State $A \gets A \cup \lrc{v}$
                 \State $B \gets B \cup \lrc{w}$    
+                \State $E_T \gets E_T \cup \lrc{e, e^\prime}$
             \EndIf
         \EndProcedure
     \end{algorithmic}  
@@ -257,15 +258,15 @@ As an immediate consequence of \cref{lem:frustrated_tree_perfect_matching} and \
 we get the following. 
 
 \begin{corollary}
-    If in the first iteration of \cref{line:max_card_bi_while} a tree $T$ is returned by $\Call{MaximalTree}{G}$, 
+    If in the first iteration of \cref{alg:max_card_match_bipartite} a tree $T$ is returned by $\Call{MaximalTree}{G}$, 
     then $G$ has no perfect matching. 
     \label{cor:maximal_tree_bi_no_perf}
 \end{corollary}
 
-The correctness of this algorithm is based on the following. 
+The correctness of \cref{alg:max_card_match_bipartite} is based on the following. 
 
 \begin{theorem}
-    Let $G$ be a graph, $M$ a matching on $G$, and $X$ the set of $M$-exposed nodes. Let $\calT$ be a collection of (disjoint) maximal $M$-alternating trees.  
+    Let $G$ be a graph, $M$ a matching on $G$, and $X$ the set of $M$-exposed nodes. Let $\calT$ be a maximal forest of (disjoint) maximal $M$-alternating trees.  
     Define $A = \bigcup_{T_i \in \calT} A_{T_i}$ and $B = \bigcup_{T_i \in \calT} B_{T_i}$. If 
     \begin{itemize}[label=--]
         \item $X = \lrc{\f[\mathrm{root}]{T_i} \colon T_i \in \calT}$
@@ -275,15 +276,15 @@ The correctness of this algorithm is based on the following.
     \label{thm:general_maximal_m_alt_trees_maximum_card}
 \end{theorem}
 \begin{proof}
-    By assumption, there are no edges between nodes in $B$. Additionally, there are no edges 
-    between nodes in $B$ and nodes not in $A \cup B$ as they would have been marked as being in $A$
-    when creating the $M$-alternating trees. Therefore, all edges with an endpoint in $B$ must have the other endpoint in $A$. 
+    By assumption, there are no edges between nodes in $B$. 
+    %Additionally, there are no edges between nodes in $B$ and nodes not in $A \cup B$ as they would have been marked as being in $A$ when creating the $M$-alternating trees. 
+    Therefore, all edges with an endpoint in $B$ must have the other endpoint in $A$. 
 
-    By definition of an $M$-alternating tree $T_i$, we have that $\abs{B_{T_i}} - \abs{A_{T_i}} = 1$. Thus, across all trees we have that 
+    By definition of an $M$-alternating tree $T_i$, we have that $\abs{B_{T_i}} - \abs{A_{T_i}} = 1$ with the root node being $M$-exposed. Thus, across all trees we have that 
     $\abs{B} - \abs{A} = \abs{\calT}$ (i.e.\! there are $\abs{T}$ $M$-exposed nodes). 
     For a matching to be of greater cardinality than $M$, it must have fewer than $\abs{\calT}$ exposed nodes. 
     However, such a matching still needs to match each node of $B$ onto a node of $A$, so it is not possible for it to have fewer exposed nodes. 
-    Therefore, the minimum number of exposed nodes for any matching in $G$ is $\abs{\calT}$, which $M$ achieves. 
+    Therefore, $M$ is a maximum cardinality matching. 
 \end{proof}
 
 As the above theorem applies to general graphs, we get the following for bipartite graphs.  
@@ -294,10 +295,151 @@ As the above theorem applies to general graphs, we get the following for biparti
 \end{theorem}
 \begin{proof}
     As shown in \cref{lem:bi_max_card_match_maximal_tree_frustrated}, the algorithm must 
-    return a collection $\calT$ of maximal $M$-alternating trees such that for each tree $T_i$, there exists no edge between nodes in $B_{T_i}$. 
+    return a forest $\calT$ of maximal $M$-alternating trees such that for each tree $T_i$, there exists no edge between nodes in $B_{T_i}$. 
     Additionally, there do not exist any edges between nodes of $B_{T_i}$ and $B_{T_j}$ for $i \neq j$ as when the first of the two trees 
     were being constructed, such an edge would have been used to extend the tree. 
     Moreover, by design of the algorithm, it must be that $X = \lrc{\f[\mathrm{root}]{T_i} \colon T_i \in \calT}$. 
     Therefore, by \cref{thm:general_maximal_m_alt_trees_maximum_card} $M$ is a maximum cardinality matching. 
 \end{proof}
 
+\subsection{Minimum Weight Perfect Matchings in the Bipartite Case}
+
+If edges are given weights, we can look at the question of finding a perfect matching of minimum 
+weight.
+
+\begin{problem}[Minimum Weight Perfect Matching]
+    Given a graph $G = (V, E)$ that can have a perfect matching and an edge weight function $w\colon E \to \R$, find a perfect matching $M$ of 
+    minimum weight. 
+    \label{prob:min_weight_perf_match}
+\end{problem}
+
+This can be formulated as an IP as shown below where the $x_e$ are binary variables denoting 
+whether an edge is in the matching or not. 
+
+\begin{mini}
+    {}{\sum_{e \in E} w_e x_e}{}{\label{lp:min_weight_perf_match_ip}}{}
+    \addConstraint{\sum_{e \in E\colon v \in e} x_e}{= 1}{\quad \forall v \in V}
+    \addConstraint{x_e}{\in \lrc{0, 1}}{\quad \forall e \in E}
+\end{mini}
+
+To facilitate this in a bipartite graph $G = (V = (A, B), E)$, %we can add edges with infinite weight if they do not exist to make the bipartite graph complete. 
+we can reformulate \cref{lp:min_weight_perf_match_ip} 
+to emphasize the properties of the bipartite graph. We now have binary variables $x_{ij}$ where $i \in A$ and $j \in B$
+to denote whether the edge $\lrp{i, j}$ is in the matching or not. 
+\begin{mini}
+    {}{\sum_{i \in A, j \in B} w_{ij} x_{ij}}{}{\label{lp:min_weight_perf_match_ip_bipartite}}{}
+    \addConstraint{\sum_{j \in B} x_{ij}}{= 1}{\quad \forall i \in A}
+    \addConstraint{\sum_{i \in A} x_{ij}}{= 1}{\quad \forall j \in B}
+    \addConstraint{x_{ij}}{\in \lrc{0, 1}}{\quad \forall i \in A, j \in B}
+\end{mini}
+The LP relaxation of this IP is given by letting $x_{ij} \geq 0$. 
+\begin{mini}
+    {}{\sum_{i \in A, j \in B} w_{ij} x_{ij}}{}{\label{lp:min_weight_perf_match_lp_bipartite}}{}
+    \addConstraint{\sum_{j \in B} x_{ij}}{= 1}{\quad \forall i \in A}
+    \addConstraint{\sum_{i \in A} x_{ij}}{= 1}{\quad \forall j \in B}
+    \addConstraint{x_{ij}}{\geq 0}{\quad \forall i \in A, j \in B}
+\end{mini}
+The dual is given by 
+\begin{maxi}
+    {}{\sum_{i \in A} u_i + \sum_{j\in B} v_j }{}{\label{lp:min_weight_perf_match_dual_lp_bipartite}}{}
+    \addConstraint{u_i + v_j}{\leq w_{ij}}{\quad \forall i \in A, j \in B}
+\end{maxi}
+where $u_i$ denotes nodes in the $A$ partition and $v_j$ nodes in the $B$ partition. 
+
+A theorem by Birkhoff shows that the optimal value of \cref{lp:min_weight_perf_match_lp_bipartite} is equivalent to the 
+optimal value of \cref{lp:min_weight_perf_match_ip_bipartite}. Therefore, by \cref{thm:strong_duality} we have that an optimal 
+feasible solution to the dual \cref{lp:min_weight_perf_match_dual_lp_bipartite} gives an optimal feasible solution to \cref{lp:min_weight_perf_match_ip_bipartite}.  
+
+\begin{theorem}[Birkhoff]
+    Let $G$ be a bipartite graph with edge weight function $w\colon E \to \R$. Then $G$ has a perfect matching iff 
+    \cref{lp:min_weight_perf_match_lp_bipartite} has a feasible solution. Moreover, if $G$ has a perfect matching, then the minimum weight 
+    of a perfect matching is equal to the optimal value of \cref{lp:min_weight_perf_match_lp_bipartite}.  
+    \label{thm:birkhoff}
+\end{theorem}
+
+Define $\overline{w}_{ij} = w_{ij} - \lrp{u_i + v_j}$. A solution to \cref{lp:min_weight_perf_match_dual_lp_bipartite} is feasible iff $w_{ij} \geq 0$ for all $i \in A, j \in B$. 
+By \cref{cor:complementary_slack} we have that a complementary slackness condition for optimal solutions to \cref{lp:min_weight_perf_match_lp_bipartite} and \cref{lp:min_weight_perf_match_dual_lp_bipartite} is 
+\begin{equation}
+    x_{ij} > 0 \Longleftrightarrow \overline{w}_{ij} = 0. 
+    \label{eq:min_weight_perf_match_slac}
+\end{equation}
+If $\lrp{u, v}$ are solutions to \cref{lp:min_weight_perf_match_dual_lp_bipartite}, denote by $\f[E_=]{u, v}$ 
+the set $\lrc{\lrp{i, j} \in E \colon \overline{w}_{ij} = 0}$. By the complementary slackness condition, this implies that if $M$ is an optimal perfect matching described by vector $x$, 
+then $M \sse  \f[E_=]{u, v}$ for an optimal dual solution $\lrp{u, v}$. However, for a given dual solution $\lrp{u, v}$, we may not be able to find a perfect matching among the edges of $\f[E_=]{u, v}$. 
+
+Given some feasible dual solution $\lrp{u, v}$, we can use the $\Call{MaximalTree}{}$ function in \cref{alg:max_card_match_bipartite} to 
+search for a perfect matching in $G_= = \lrp{V, E_=}$. 
+%If the algorithm returns no tree, it returns a perfect matching of $G_=$, whose characteristic vector $x$
+%is a feasible solution of \cref{lp:min_weight_perf_match_lp_bipartite} and satisfies the complementary slackness conditions with the current dual solution, so it must be optimal. 
+Otherwise, the algorithm returns a matching $M$ of $G_=$ and an $M$-alternating tree $T$ such that 
+nodes of $B_T$ are joined to nodes in $A_T$ by edges of $E_=$. 
+
+In this case, we want to update the dual solution in such a way that its value increases. 
+By definition of an $M$-alternating tree $T$ in a bipartite graph, we know that $A_T$ and $B_T$ belong to separate partitions. WLOG assume that $A_T \sse A$ and $B_T \sse B$. 
+We can update the dual by keeping the edges of of $M$ and $T$ in $\f[E_=]{u, v}$ and decreasing the $\overline{w}_{cd}$ for edges $(c, d)$ such that $c \in B_T$ and $d \notin A_T$. 
+The decrease can be achieved by choosing some $\varepsilon = \min \lrc{\overline{w}_{cd} \colon c \in B_T, d \notin T}$
+and decreasing $u_i$ by $\varepsilon$ for all $i \in A_T$ and increasing $v_j$ by $\varepsilon$ for all $j \in B_T$. 
+The dual is clearly still feasible as $\overline{w}_{ij} \geq 0$ for $i \in A, j \in B$ and some edge
+joining a node $c \in B_T$ and $d \notin T$ will enter $E_=$. Since this new node $d \notin T$, it can lead to either an augmentation or 
+tree extension step. We can iteratively continue doing this until a perfect matching is returned 
+or stop when we get a frustrated tree. 
+
+\begin{algorithm}[!h]
+    \caption{Minimum Weight Perfect Matching in Bipartite Graphs} \label{alg:min_weight_perf_match_bi}  
+    \begin{algorithmic}[1]
+        \Algin A bipartite graph $G = (V, E)$, a feasible dual solution $\lrp{u, v}$, a matching $M$ of $G_=$
+        \Algout Either a perfect matching $M$ or a NO certificate
+        \State Let $X$ be the set of $M$-exposed nodes. Choose $r \in X$
+        \State $T \gets \lrp{\lrp{A, B}, E_T}$ where $A = \emptyset, B = \lrc{r}, E_T = \emptyset$  
+        \While{$T$ is not frustrated}
+            \While{$\exists e = \lrp{c, d} \in E_=$ where $c \in B, d \notin T$}
+                \If{$d \in X$}      
+                    \State Let $P$ be the path from $r$ to $d$  
+                    \State $M \gets \Call{Augment}{M, P}$
+                    \State $X \gets X \sm \lrc{r, d}$
+                    \If{$X = \emptyset$}
+                        \State \Return $M$ \Comment{$M$ is a perfect matching}
+                    \Else 
+                        \State Choose $r \in X$
+                        \State $T \gets \lrp{\lrp{\emptyset, \lrc{r}}, \emptyset}$ 
+                    \EndIf 
+                \Else 
+                    \State $T \gets \Call{ExtendTree}{T, e}$
+                \EndIf
+            \EndWhile
+            \State $\varepsilon \gets \min \lrc{\overline{w}_{cd} \colon c \in B_T, d \notin T}$
+            \State $u_i \gets u_i - \varepsilon$ for all $i \in A$, $v_j \gets v_j + \varepsilon$ for all $j \in B$
+        \EndWhile
+        \State \Return NO \Comment{No perfect matching exists}
+        \Statex
+        \Procedure{Augment}{$M$, $P$}
+            \State \Return $ M \symdiff P$
+        \EndProcedure
+        \Statex
+        \Procedure{ExtendTree}{$T = \lrp{\lrp{A, B}, E_T} , e = \lrp{u, v}$}
+            \If{$\exists e^\prime = \lrp{v, w} \in M$}
+                \State $A \gets A \cup \lrc{v}$
+                \State $B \gets B \cup \lrc{w}$    
+                \State $E_T \gets E_T \cup \lrc{e, e^\prime}$
+            \EndIf
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+The correctness of this algorithm is based on the fact that if a perfect matching is returned,
+we get a corresponding characteristic vector $x$ and a feasible dual solution $\lrp{u, v}$ that satisfy 
+the complementary slackness condition \cref{eq:min_weight_perf_match_slac}. By \cref{cor:complementary_slack}, they must 
+therefore be optimal solutions to \cref{lp:min_weight_perf_match_lp_bipartite} and \cref{lp:min_weight_perf_match_dual_lp_bipartite}, respectively. 
+By \cref{thm:birkhoff}, this gives that the matching $M$ returned is of minimum weight. 
+
+\begin{theorem}
+    \cref{alg:min_weight_perf_match_bi} can be implemented in $\bigO{n^2m}$ time where 
+    $n = \abs{V}, m = \abs{E}$. 
+    \label{thm:min_weight_perf_match_bi_runtime}
+\end{theorem}
+\begin{proof}
+    In the worst case, the algorithm may perform only one tree extension in an iteration of the outer while loop, 
+    and thus requires a dual change during this iteration. This gives $\bigO{n^2}$ dual changes. 
+    A naive way to compute $\varepsilon$ for each dual change is to just look at every edge, so in total we get 
+    a running time of $\bigO{n^2m}$. 
+\end{proof}
