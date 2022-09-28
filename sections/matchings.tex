@@ -229,7 +229,7 @@ Alternating trees are useful in deciding if a graph has a perfect matching in th
         \EndFunction
         \Statex
         \Procedure{Augment}{$M$, $P$}
-            \State \Return $ M \symdiff P$
+            \State $ M \symdiff P$
         \EndProcedure
         \Statex
         \Procedure{ExtendTree}{$T = \lrp{\lrp{A, B}, E_T} , e = \lrp{u, v}$}
@@ -360,7 +360,7 @@ feasible solution to the dual \cref{lp:min_weight_perf_match_dual_lp_bipartite} 
 Define $\overline{w}_{ij} = w_{ij} - \lrp{u_i + v_j}$. A solution to \cref{lp:min_weight_perf_match_dual_lp_bipartite} is feasible iff $w_{ij} \geq 0$ for all $i \in A, j \in B$. 
 By \cref{cor:complementary_slack} we have that a complementary slackness condition for optimal solutions to \cref{lp:min_weight_perf_match_lp_bipartite} and \cref{lp:min_weight_perf_match_dual_lp_bipartite} is 
 \begin{equation}
-    x_{ij} > 0 \Longleftrightarrow \overline{w}_{ij} = 0. 
+    x_{ij} > 0 \Longrightarrow \overline{w}_{ij} = 0. 
     \label{eq:min_weight_perf_match_slac}
 \end{equation}
 If $\lrp{u, v}$ are solutions to \cref{lp:min_weight_perf_match_dual_lp_bipartite}, denote by $\f[E_=]{u, v}$ 
@@ -393,7 +393,7 @@ or stop when we get a frustrated tree.
         \State $T \gets \lrp{\lrp{A, B}, E_T}$ where $A = \emptyset, B = \lrc{r}, E_T = \emptyset$  
         \While{$T$ is not frustrated}
             \While{$\exists e = \lrp{c, d} \in E_=$ where $c \in B, d \notin T$}
-                \If{$d \in X$}      
+                \If{$d \in X$}  \Comment{Forms an $M$-augmenting path}
                     \State Let $P$ be the path from $r$ to $d$  
                     \State $M \gets \Call{Augment}{M, P}$
                     \State $X \gets X \sm \lrc{r, d}$
@@ -401,7 +401,7 @@ or stop when we get a frustrated tree.
                         \State \Return $M$ \Comment{$M$ is a perfect matching}
                     \Else 
                         \State Choose $r \in X$
-                        \State $T \gets \lrp{\lrp{\emptyset, \lrc{r}}, \emptyset}$ 
+                        \State $T \gets \lrp{\lrp{\emptyset, \lrc{r}}, \emptyset}$ \Comment{Start a new $M$-alternating tree}
                     \EndIf 
                 \Else 
                     \State $T \gets \Call{ExtendTree}{T, e}$
@@ -413,7 +413,7 @@ or stop when we get a frustrated tree.
         \State \Return NO \Comment{No perfect matching exists}
         \Statex
         \Procedure{Augment}{$M$, $P$}
-            \State \Return $ M \symdiff P$
+            \State $ M \symdiff P$
         \EndProcedure
         \Statex
         \Procedure{ExtendTree}{$T = \lrp{\lrp{A, B}, E_T} , e = \lrp{u, v}$}
